@@ -21,10 +21,19 @@ client.connect()
   });
 //////////　MongoDB 連線 (end)　/////////
 
-const echoDao = new EchoDao({mongoClient: client});
-const mongoService = new MongoService({mongoClient: client, echoDao});
-const {createRouter: createRootRouter} = require('./routes/index');
-const indexRouter = createRootRouter({mongoService});
+////////// Dependency Injection (start)　/////////
+const { createContainer, asClass, asValue, asFunction, Lifetime } = require('awilix');
+const { createRouter: createRootRouter } = require('./routes/index');
+
+// 建立 awilix container
+const container = createContainer();
+
+container.register({
+  mongoClient: asValue(client, { lifetime: Lifetime.SINGLETON }), // 註冊為 mongoClient，且生命期為 SINGLETON (執行中只有一個物件)
+  indexRouter: asFunction(createRootRouter, { lifetime: Lifetime.SINGLETON }), // 註冊為 indexRouter，利用工廠函數 createRootRouter 建立物件
+});
+////////// Dependency Injection (end)　/////////
+
 var usersRouter = require('./routes/users');
 
 var app = express();
@@ -45,12 +54,12 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
