@@ -58,6 +58,8 @@ container.loadModules([
     }
   });
 
+// 預先引起建立 mongoClient
+const mongoClient = container.resolve('mongoClient');
 
 // 取出名為 indexRouter 物件
 //
