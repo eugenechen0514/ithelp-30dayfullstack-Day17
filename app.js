@@ -32,6 +32,18 @@ container.register({
   mongoClient: asValue(client, { lifetime: Lifetime.SINGLETON }), // 註冊為 mongoClient，且生命期為 SINGLETON (執行中只有一個物件)
   indexRouter: asFunction(createRootRouter, { lifetime: Lifetime.SINGLETON }), // 註冊為 indexRouter，利用工廠函數 createRootRouter 建立物件
 });
+
+// 掃描資料夾，用 `asClass` 註冊且名稱命名規則為 camelCase ，生命期為 SINGLETON，
+container.loadModules([
+  'daos/*.js',
+  'services/*.js',
+], {
+    formatName: 'camelCase',
+    resolverOptions: {
+      lifetime: Lifetime.SINGLETON,
+      register: asClass
+    }
+  });
 ////////// Dependency Injection (end)　/////////
 
 var usersRouter = require('./routes/users');
