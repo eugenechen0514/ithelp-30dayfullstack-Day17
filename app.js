@@ -44,6 +44,15 @@ container.loadModules([
       register: asClass
     }
   });
+
+
+// 取出名為 indexRouter 物件
+//
+// 建立物件路徑:
+// createRootRouter({mongoService}) -> mongoService -> mongoClient and echoDao
+//                                                                        |
+//                                                                        ∟ ->  mongoClient
+const indexRouter = container.resolve('indexRouter');
 ////////// Dependency Injection (end)　/////////
 
 var usersRouter = require('./routes/users');
