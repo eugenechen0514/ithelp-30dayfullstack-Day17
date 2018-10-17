@@ -2,13 +2,14 @@
   "name": "hello-mongo",
   "version": "0.0.0",
   "private": true,
-  "main" : "./bin/www",
+  "main": "./bin/www",
   "scripts": {
     "start": "PORT=3001 node ./bin/www",
     "startdb": "docker run --name mongo4 -v $(pwd)/data:/data/db -d -p 27017:27017 --rm mongo:4.1",
     "stopdb": "docker stop mongo4"
   },
   "dependencies": {
+    "awilix": "^4.0.0",
     "cookie-parser": "~1.4.3",
     "cors": "^2.8.4",
     "debug": "~2.6.9",
