@@ -9,15 +9,27 @@ const EchoDao = require('./daos/EchoDao');
 
 //////////　MongoDB 連線 (start)　/////////
 const MongoClient = require('mongodb').MongoClient;
-const url = 'mongodb://localhost:27017';
-const client = new MongoClient(url, { useNewUrlParser: true });
-client.connect()
-  .then((connectedClient) => {
-    console.log('mongodb is connected');
-  })
-  .catch(error => {
-    console.error(error);
-  });
+
+/**
+ * 
+ * @param {object} config
+ * @returns {MongoClient}
+ */
+function createMongoClient({config}) {
+  const url = config.mongodb.url;
+  const client = new MongoClient(url, { useNewUrlParser: true });
+
+  // 立即連線
+  client.connect()
+    .then((connectedClient) => {
+      console.log('mongodb is connected');
+    })
+    .catch(error => {
+      console.error(error);
+    });
+    return client;
+}
+
 //////////　MongoDB 連線 (end)　/////////
 
 ////////// Dependency Injection (start)　/////////
