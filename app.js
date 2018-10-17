@@ -10,7 +10,6 @@ const EchoDao = require('./daos/EchoDao');
 //////////　MongoDB 連線 (start)　/////////
 const MongoClient = require('mongodb').MongoClient;
 const url = 'mongodb://localhost:27017';
-const dbName = 'myproject';
 const client = new MongoClient(url, { useNewUrlParser: true });
 client.connect()
   .then((connectedClient) => {
