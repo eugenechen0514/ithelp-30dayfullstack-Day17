@@ -9,15 +9,27 @@ const EchoDao = require('./daos/EchoDao');
 
 //////////　MongoDB 連線 (start)　/////////
 const MongoClient = require('mongodb').MongoClient;
-const url = 'mongodb://localhost:27017';
-const client = new MongoClient(url, { useNewUrlParser: true });
-client.connect()
-  .then((connectedClient) => {
-    console.log('mongodb is connected');
-  })
-  .catch(error => {
-    console.error(error);
-  });
+
+/**
+ * 
+ * @param {object} config
+ * @returns {MongoClient}
+ */
+function createMongoClient({config}) {
+  const url = config.mongodb.url;
+  const client = new MongoClient(url, { useNewUrlParser: true });
+
+  // 立即連線
+  client.connect()
+    .then((connectedClient) => {
+      console.log('mongodb is connected');
+    })
+    .catch(error => {
+      console.error(error);
+    });
+    return client;
+}
+
 //////////　MongoDB 連線 (end)　/////////
 
 ////////// Dependency Injection (start)　/////////
@@ -30,7 +42,7 @@ const container = createContainer();
 
 container.register({
   config: asValue(config, { lifetime: Lifetime.SINGLETON }),
-  mongoClient: asValue(client, { lifetime: Lifetime.SINGLETON }), // 註冊為 mongoClient，且生命期為 SINGLETON (執行中只有一個物件)
+  mongoClient: asFunction(createMongoClient, { lifetime: Lifetime.SINGLETON }), // 註冊為 mongoClient，且生命期為 SINGLETON (執行中只有一個物件)
   indexRouter: asFunction(createRootRouter, { lifetime: Lifetime.SINGLETON }), // 註冊為 indexRouter，利用工廠函數 createRootRouter 建立物件
 });
 
@@ -46,6 +58,8 @@ container.loadModules([
     }
   });
 
+// 預先引起建立 mongoClient
+const mongoClient = container.resolve('mongoClient');
 
 // 取出名為 indexRouter 物件
 //
